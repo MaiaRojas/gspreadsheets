@@ -55,12 +55,12 @@ exports.authorize = () => {
   });
 };
 
-exports.listData = (sheetId, auth) => {
+exports.listData = (sheetId, tabId, auth) => {
   const sheets = google.sheets({version: 'v4', auth});
   return new Promise((resolve, reject) => {
     sheets.spreadsheets.values.get({
         spreadsheetId: sheetId,
-        range: 'Data!A1:S',
+        range: `${tabId}!A1:S`,
       }, (err, res) => (err
         ? console.log('The API returned an error: ' + err) || reject(err)
         : resolve(res.data.values)
