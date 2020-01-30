@@ -20,7 +20,7 @@ const questions = {
   '¿Quieres comentarnos algo más?': 'comments',
 };
 
-const getEmail = (user) => user.slice(user.indexOf('(') + 1, user.length - 1);
+const getEmail = (user) => user.toLowerCase().slice(user.indexOf('(') + 1, user.length - 1);
 const processData = (data, questions) =>
   data
     .slice(1)
@@ -30,7 +30,7 @@ const processData = (data, questions) =>
           (memo, key, index) => ({
             ...memo,
             ...(key.toLowerCase() === 'user'
-              ? {user: row[index], email: getEmail(row[index])}
+              ? {user: row[index], email: getEmail(row[index]).toLowerCase()}
               : {[key.toLowerCase()]: row[index]}),
           }), {});
       return objResult;
@@ -44,6 +44,7 @@ const allEmails = (data) => {
 };
 
 exports.convertData = (data) => {
+  console.log('Daaaaaaaata', data)
   const transformedData = processData(data, questions);
   const emails = allEmails(transformedData);
   return emails.reduce((acc, email) => {
