@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const { authorize, listData } = require('./googleapi/index');
 const { convertData } = require('./utils/processData');
+const { projectQuestions, sprintQuestions } = require('./utils/questions');
 
 app.use(
     cors({
@@ -26,14 +27,21 @@ app.post('/get_data', async ({ body }, res, next) => {
   try {
     if (!Object.keys(body).length) return next(400);
 
-    const { sheetId, tabId } = body;
+    const {
+      sheetProjectId,
+      tabProjectId,
+      sheetSprintId,
+      tabSprintId,
+    } = body;
     const auth = await authorize();
-    const data = await listData(sheetId, tabId, auth);
-    const processData = await convertData(data);
+    const dataProject = await listData(sheetProjectId, tabProjectId, auth);
+    const dataSprint = await listData(sheetSprintId, tabSprintId, auth);
+    const processDataProject = await convertData(dataProject, projectQuestions);
+    const processDataSprint = await convertData(dataSprint, sprintQuestions);
 
-    if (!processData) return next(404);
+    if (!processDataProject || !processDataSprint) return next(404);
 
-    return res.json(processData);
+    return res.json({ projectCheckout: processDataProject, sprintCheckout: processDataSprint });
   } catch (err) {
     return next(err);
   }
